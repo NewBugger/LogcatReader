@@ -32,7 +32,7 @@
             android:dialogTitle="@string/pref_working_mode_title"
             android:entries="@array/pref_working_mode_entries"
             android:entryValues="@array/pref_working_mode_values"
-            android:key="pref_working_mode_key"
+            android:key="pref_key_working_mode"
             android:persistent="true"
             android:title="@string/pref_working_mode_title" />
 

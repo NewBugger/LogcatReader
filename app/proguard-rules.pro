@@ -20,6 +20,10 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+
+#noinspection ShrinkerUnresolvedReference
+
 #-renamesourcefileattribute SourceFile
 #-keepattributes SourceFile,LineNumberTable
+-keepclasseswithmembers class android.content.pm.** { *; }
 -dontobfuscate

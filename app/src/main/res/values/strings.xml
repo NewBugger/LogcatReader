@@ -27,6 +27,7 @@
     <string name="save_to_file">Save</string>
     <string name="export">Export</string>
     <string name="logcat">Logcat</string>
+    <string name="pref_working_mode_title">Working Mode</string>
     <string name="pref_poll_interval_title">Poll Interval</string>
     <string name="view_log">View</string>
     <string name="could_not_open_log_file">Could not open the log file</string>
@@ -118,7 +119,4 @@
     <string name="export_format_single_line">Single line</string>
     <string name="error_opening_source">Error opening source</string>
     <string name="unsupported_source">Unsupported source</string>
-
-    <string name="pref_working_mode_title">Working Mode</string>
-    <string name="pref_working_mode_key">mode</string>
 </resources>
