@@ -5,7 +5,7 @@ import android.content.*
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import com.dp.logcat.Log
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.FiltersActivity
 import com.dp.logcatapp.fragments.base.BaseDialogFragment
 
@@ -32,7 +32,7 @@ class FilterExclusionDialogFragment : BaseDialogFragment(), DialogInterface.OnCl
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(activity!!)
+        return AlertDialog.Builder(requireActivity())
                 .setItems(R.array.filter_exclude, this)
                 .create()
     }
@@ -47,8 +47,8 @@ class FilterExclusionDialogFragment : BaseDialogFragment(), DialogInterface.OnCl
     }
 
 
-    fun moveToFilterActivity(log: Log, isExclusion: Boolean) {
-        val intent = Intent(activity!!, FiltersActivity::class.java)
+    private fun moveToFilterActivity(log: Log, isExclusion: Boolean) {
+        val intent = Intent(requireActivity(), FiltersActivity::class.java)
         intent.putExtra(FiltersActivity.EXTRA_EXCLUSIONS, isExclusion)
         intent.putExtra(FiltersActivity.KEY_LOG, log)
         startActivity(intent)

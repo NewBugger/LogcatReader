@@ -158,7 +158,7 @@ class Logcat(initialCapacity: Int = INITIAL_LOG_CAPACITY) : Closeable {
         start()
     }
 
-    fun exitSuccess() = exitCode == 0
+    private fun exitSuccess() = exitCode == 0
 
     fun isRunning() = isProcessAlive
 

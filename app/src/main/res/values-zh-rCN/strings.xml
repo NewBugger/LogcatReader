@@ -37,7 +37,7 @@
     <string name="grant_read_logs_permission_instruction">要查看所有日志,必须授予READ_LOGS权限.\n\n
         1. 请通过USB将设备连接到计算机\n
         2. 运行命令:\n\n
-        adb shell pm grant com.dp.logcatapp android.permission.READ_LOGS\n\n
+        adb shell pm grant io.github.newbugger.android.logcatapp android.permission.READ_LOGS\n\n
         3. 关闭应用程序(按两下返回键),然后将其的后台关闭.\n\n
         如果有有任何问题请提issue,谢谢!
     </string>
@@ -88,8 +88,6 @@
     <string name="restart_logcat">重启 logcat</string>
     <string name="exclusion">排除</string>
     <string name="clear">清楚</string>
-    <string name="process_id" translatable="false">PID</string>
-    <string name="thread_id" translatable="false">TID</string>
     <string name="log_level">Log 等级</string>
     <string name="message">信息</string>
     <string name="date">日期</string>
@@ -98,7 +96,7 @@
     <string name="permission_instruction0">请按照以下步骤授予READ_LOGS权限（只需执行一次）:</string>
     <string name="permission_instruction1">1.将手机连接到装有ADB工具的计算机.</string>
     <string name="permission_instruction2">2. 运行以下命令 (单行):</string>
-    <string name="permission_instruction3">adb shell pm grant com.dp.logcatapp android.permission.READ_LOGS</string>
+    <string name="permission_instruction3">adb shell pm grant io.github.newbugger.android.logcatapp android.permission.READ_LOGS</string>
     <string name="permission_instruction4">3. 关闭应用并清理后台.</string>
     <string name="permission_instruction5">4. 重新启动.</string>
     <string name="permission_instruction6">如果你有任何问题请提交 issues, 谢谢!</string>

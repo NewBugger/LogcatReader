@@ -1,7 +1,7 @@
 package com.dp.logcatapp.activities
 
 import android.os.Bundle
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.fragments.settings.SettingsFragment
 
 class SettingsActivity : BaseActivityWithToolbar() {

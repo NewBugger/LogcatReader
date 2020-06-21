@@ -40,5 +40,5 @@
     <color name="icon_tint_dark">#BDBDBD</color>
 
     <!--Fix accent color for preference category for API < 21-->
-    <color name="preference_fallback_accent_color">@color/color_accent</color>
+    <!--<color name="preference_fallback_accent_color">@color/color_accent</color>-->
 </resources>

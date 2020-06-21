@@ -20,8 +20,8 @@ import com.dp.logcat.Filter
 import com.dp.logcat.Log
 import com.dp.logcat.Logcat
 import com.dp.logcat.LogsReceivedListener
-import com.dp.logcatapp.BuildConfig
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.BuildConfig
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.BaseActivityWithToolbar
 import com.dp.logcatapp.activities.FiltersActivity
 import com.dp.logcatapp.activities.SavedLogsActivity
@@ -184,13 +184,14 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
         setHasOptionsMenu(true)
         serviceBinder = ServiceBinder(LogcatService::class.java, this)
 
-        val maxLogs = activity!!.getDefaultSharedPreferences()
+        val getActivity = requireActivity()
+        val maxLogs = getActivity.getDefaultSharedPreferences()
                 .getString(PreferenceKeys.Logcat.KEY_MAX_LOGS,
                         PreferenceKeys.Logcat.Default.MAX_LOGS)!!.trim().toInt()
-        adapter = MyRecyclerViewAdapter(activity!!, maxLogs)
-        activity!!.getDefaultSharedPreferences().registerOnSharedPreferenceChangeListener(adapter)
+        adapter = MyRecyclerViewAdapter(getActivity, maxLogs)
+        getActivity.getDefaultSharedPreferences().registerOnSharedPreferenceChangeListener(adapter)
 
-        viewModel = ViewModelProviders.of(activity!!).get(LogcatLiveViewModel::class.java)
+        viewModel = ViewModelProviders.of(getActivity).get(LogcatLiveViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -236,13 +237,15 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
         hideFabUp()
         hideFabDown()
 
+        val getFragmentManager = requireFragmentManager()
+
         adapter.setOnClickListener { v ->
             val pos = linearLayoutManager.getPosition(v)
             if (pos >= 0) {
                 viewModel.autoScroll = false
                 val log = adapter[pos]
                 CopyToClipboardDialogFragment.newInstance(log)
-                        .show(fragmentManager!!, CopyToClipboardDialogFragment.TAG)
+                        .show(getFragmentManager, CopyToClipboardDialogFragment.TAG)
             }
         }
 
@@ -252,7 +255,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
                 viewModel.autoScroll = false
                 val log = adapter[pos]
                 FilterExclusionDialogFragment.newInstance(log)
-                        .show(fragmentManager!!, FilterExclusionDialogFragment.TAG)
+                        .show(getFragmentManager, FilterExclusionDialogFragment.TAG)
             }
         }
 
@@ -260,7 +263,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
             viewModel.showedGrantPermissionInstruction = true
             NeedPermissionDialogFragment().let {
                 it.setTargetFragment(this, 0)
-                it.show(fragmentManager!!,
+                it.show(getFragmentManager,
                         NeedPermissionDialogFragment.TAG)
             }
         }
@@ -294,7 +297,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        val getFragmentManager = requireFragmentManager()
         viewModel.getFileSaveNotifier().observe(viewLifecycleOwner, Observer { saveInfo ->
             saveInfo?.let {
                 if (viewModel.alreadySaved) {
@@ -309,7 +312,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
                         when (it.result) {
                             SaveInfo.SUCCESS -> {
                                 OnSavedBottomSheetDialogFragment.newInstance(it.fileName!!, it.uri!!)
-                                        .show(fragmentManager!!, OnSavedBottomSheetDialogFragment.TAG)
+                                        .show(getFragmentManager, OnSavedBottomSheetDialogFragment.TAG)
                             }
                             SaveInfo.ERROR_EMPTY_LOGS -> {
                                 showSnackbar(view, getString(R.string.nothing_to_save))
@@ -325,7 +328,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
     }
 
     private fun checkReadLogsPermission() =
-            ContextCompat.checkSelfPermission(activity!!,
+            ContextCompat.checkSelfPermission(requireActivity(),
                     Manifest.permission.READ_LOGS) == PackageManager.PERMISSION_GRANTED
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -406,27 +409,27 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-
+        val getActivity = requireActivity()
         val playPauseItem = menu.findItem(R.id.action_play_pause)
         val recordToggleItem = menu.findItem(R.id.action_record_toggle)
 
         logcatService?.let {
             if (it.paused) {
-                playPauseItem.icon = ContextCompat.getDrawable(activity!!,
+                playPauseItem.icon = ContextCompat.getDrawable(getActivity,
                         R.drawable.ic_play_arrow_white_24dp)
                 playPauseItem.title = getString(R.string.resume)
             } else {
-                playPauseItem.icon = ContextCompat.getDrawable(activity!!,
+                playPauseItem.icon = ContextCompat.getDrawable(getActivity,
                         R.drawable.ic_pause_white_24dp)
                 playPauseItem.title = getString(R.string.pause)
             }
 
             if (it.recording) {
-                recordToggleItem.icon = ContextCompat.getDrawable(activity!!,
+                recordToggleItem.icon = ContextCompat.getDrawable(getActivity,
                         R.drawable.ic_stop_white_24dp)
                 recordToggleItem.title = getString(R.string.stop_recording)
             } else {
-                recordToggleItem.icon = ContextCompat.getDrawable(activity!!,
+                recordToggleItem.icon = ContextCompat.getDrawable(getActivity,
                         R.drawable.ic_fiber_manual_record_white_24dp)
                 recordToggleItem.title = getString(R.string.start_recording)
             }
@@ -448,7 +451,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
                         it.logcat.resume()
                     }
                     it.paused = newPausedState
-                    activity?.invalidateOptionsMenu()
+                    requireActivity().invalidateOptionsMenu()
                 }
                 true
             }
@@ -464,7 +467,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
 
                     val logcat = it.logcat
                     if (recording) {
-                        Snackbar.make(view!!, getString(R.string.started_recording),
+                        Snackbar.make(requireView(), getString(R.string.started_recording),
                                 Snackbar.LENGTH_SHORT)
                                 .show()
                         logcat.startRecording()
@@ -473,7 +476,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
                     }
 
                     it.recording = recording
-                    activity?.invalidateOptionsMenu()
+                    requireActivity().invalidateOptionsMenu()
                 }
                 true
             }
@@ -510,7 +513,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
     }
 
     private fun moveToFilterActivity(isExclusion: Boolean) {
-        val intent = Intent(activity!!, FiltersActivity::class.java)
+        val intent = Intent(requireActivity(), FiltersActivity::class.java)
         intent.putExtra(FiltersActivity.EXTRA_EXCLUSIONS, isExclusion)
         startActivity(intent)
     }
@@ -528,7 +531,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
                 it.updateNotification(false)
                 saveToFile(true)
                 it.recording = false
-                activity?.invalidateOptionsMenu()
+                requireActivity().invalidateOptionsMenu()
             }
         }
         viewModel.stopRecording = false
@@ -547,12 +550,12 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
 
     override fun onStart() {
         super.onStart()
-        serviceBinder.bind(activity!!)
+        serviceBinder.bind(requireActivity())
     }
 
     override fun onStop() {
         super.onStop()
-        serviceBinder.unbind(activity!!)
+        serviceBinder.unbind(requireActivity())
     }
 
     private fun removeLastSearchRunnableCallback() {
@@ -569,7 +572,7 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
 
     override fun onDestroy() {
         super.onDestroy()
-        activity!!.getDefaultSharedPreferences().unregisterOnSharedPreferenceChangeListener(adapter)
+        requireActivity().getDefaultSharedPreferences().unregisterOnSharedPreferenceChangeListener(adapter)
 
         removeLastSearchRunnableCallback()
         searchTask?.cancel()
@@ -678,7 +681,8 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
     fun useRootToGrantPermission() {
         scope.launch {
             val dialog = AskingForRootAccessDialogFragment()
-            dialog.show(fragmentManager!!, AskingForRootAccessDialogFragment.TAG)
+            val getFragmentManager = requireFragmentManager()
+            dialog.show(getFragmentManager, AskingForRootAccessDialogFragment.TAG)
 
             val result = withContext(IO) {
                 val cmd = "pm grant ${BuildConfig.APPLICATION_ID} ${Manifest.permission.READ_LOGS}"
@@ -687,11 +691,11 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
 
             dialog.dismissAllowingStateLoss()
             if (result) {
-                RestartAppMessageDialogFragment.newInstance().show(fragmentManager!!,
+                RestartAppMessageDialogFragment.newInstance().show(getFragmentManager,
                         RestartAppMessageDialogFragment.TAG)
             } else {
-                activity!!.showToast(getString(R.string.fail))
-                ManualMethodToGrantPermissionDialogFragment().show(fragmentManager!!,
+                requireActivity().showToast(getString(R.string.fail))
+                ManualMethodToGrantPermissionDialogFragment().show(getFragmentManager,
                         ManualMethodToGrantPermissionDialogFragment.TAG)
             }
         }

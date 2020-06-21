@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dp.logcat.Log
 import com.dp.logcat.LogPriority
 import com.dp.logcat.Logcat
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.util.PreferenceKeys
 import com.logcat.collections.FixedCircularArray
 

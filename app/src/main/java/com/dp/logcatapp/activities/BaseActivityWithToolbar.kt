@@ -15,7 +15,7 @@ import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
 import androidx.core.view.ViewCompat
 import androidx.preference.PreferenceManager
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.util.setTheme
 
 @SuppressLint("Registered")

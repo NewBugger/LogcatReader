@@ -1,12 +1,14 @@
 package com.dp.logcatapp.views
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.google.android.material.snackbar.Snackbar
 
+@SuppressLint("InflateParams")
 class IndeterminateProgressSnackBar(view: View,
                                     message: String) {
 

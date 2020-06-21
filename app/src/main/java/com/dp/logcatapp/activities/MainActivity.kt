@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.fragments.logcatlive.LogcatLiveFragment
 import com.dp.logcatapp.services.LogcatService
 import com.dp.logcatapp.util.PreferenceKeys

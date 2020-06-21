@@ -20,7 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep public class android.support.v7.preference.Preference { *; }
--keep public class * extends android.support.v7.preference.Preference { *; }
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable
+#-renamesourcefileattribute SourceFile
+#-keepattributes SourceFile,LineNumberTable
+-dontobfuscate

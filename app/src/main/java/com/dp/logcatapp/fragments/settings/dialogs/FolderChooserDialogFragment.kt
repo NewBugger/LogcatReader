@@ -17,7 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.fragments.base.BaseDialogFragment
 import com.dp.logcatapp.fragments.settings.SettingsFragment
 import com.dp.logcatapp.util.PreferenceKeys
@@ -51,15 +51,16 @@ class FolderChooserDialogFragment : BaseDialogFragment(), View.OnClickListener {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val getActivity = requireActivity()
         val rootView = inflateLayout(R.layout.folder_chooser)
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
 
-        layoutManager = LinearLayoutManager(activity!!)
+        layoutManager = LinearLayoutManager(getActivity)
 
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = recyclerViewAdapter
 
-        return AlertDialog.Builder(activity!!)
+        return AlertDialog.Builder(getActivity)
                 .setTitle("Select a folder")
                 .setView(rootView)
                 .setPositiveButton(getString(R.string.select)) { _, _ ->

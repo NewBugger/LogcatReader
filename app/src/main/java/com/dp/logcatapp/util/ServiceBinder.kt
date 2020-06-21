@@ -8,8 +8,7 @@ import java.io.Closeable
 
 class ServiceBinder(private val mClass: Class<*>,
                     private var mServiceConnection: ServiceConnection?) : Closeable {
-    var isBound: Boolean = false
-        private set
+    private var isBound: Boolean = false
 
     fun bind(context: Context) {
         checkNotNull(mServiceConnection) { "This ServiceBinder has already been closed." }

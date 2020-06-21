@@ -17,8 +17,8 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.dp.logcat.Logcat
-import com.dp.logcatapp.BuildConfig
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.BuildConfig
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.fragments.base.BaseDialogFragment
 import com.dp.logcatapp.fragments.logcatlive.LogcatLiveFragment
 import com.dp.logcatapp.fragments.settings.dialogs.FolderChooserDialogFragment
@@ -47,6 +47,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun setupAppearanceCategory() {
+        val getActivity = requireActivity()
         val sharedPrefs = preferenceScreen.sharedPreferences
         val themePref = findPreference<ListPreference>(PreferenceKeys.Appearance.KEY_THEME)!!
         val useBlackThemePref = findPreference<Preference>(PreferenceKeys.Appearance.KEY_USE_BLACK_THEME)!!
@@ -66,23 +67,28 @@ class SettingsFragment : PreferenceFragmentCompat() {
         themePref.onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { preference, newValue ->
                     preference.summary = themePrefEntries[(newValue as String).toInt()]
-                    activity!!.restartApp()
+                    getActivity.restartApp()
                     true
                 }
 
         useBlackThemePref.onPreferenceChangeListener = Preference
                 .OnPreferenceChangeListener { _, _ ->
-                    if (activity!!.isDarkThemeOn()) {
-                        activity!!.restartApp()
+                    if (getActivity.isDarkThemeOn()) {
+                        getActivity.restartApp()
                     }
                     true
                 }
     }
 
     private fun setupLogcatCategory() {
+        val prefWorkingMode = findPreference<Preference>(PreferenceKeys.Logcat.KEY_WORKING_MODE)!!
         val prefPollInterval = findPreference<Preference>(PreferenceKeys.Logcat.KEY_POLL_INTERVAL)!!
         val prefBuffers = findPreference<MultiSelectListPreference>(PreferenceKeys.Logcat.KEY_BUFFERS)!!
         val prefMaxLogs = findPreference<Preference>(PreferenceKeys.Logcat.KEY_MAX_LOGS)!!
+
+        prefWorkingMode.summary = preferenceScreen.sharedPreferences
+                .getString(PreferenceKeys.Logcat.KEY_WORKING_MODE,
+                        PreferenceKeys.Logcat.Default.WORKING_MODE)!!
 
         prefPollInterval.summary = preferenceScreen.sharedPreferences
                 .getString(PreferenceKeys.Logcat.KEY_POLL_INTERVAL,
@@ -94,14 +100,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         val v = newValue.toString().trim()
                         val num = v.toLong()
                         if (num <= 0) {
-                            activity!!.showToast(getString(R.string.value_must_be_greater_than_0))
+                            requireActivity().showToast(getString(R.string.value_must_be_greater_than_0))
                             false
                         } else {
                             preference.summary = "$v ms"
                             true
                         }
                     } catch (e: NumberFormatException) {
-                        activity!!.showToast(getString(R.string.value_must_be_a_positive_integer))
+                        requireActivity().showToast(getString(R.string.value_must_be_a_positive_integer))
                         false
                     }
                 }
@@ -163,14 +169,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         }
 
                         if (newMaxLogs < 1000) {
-                            activity!!.showToast(getString(R.string.cannot_be_less_than_1000))
+                            requireActivity().showToast(getString(R.string.cannot_be_less_than_1000))
                             return@callback false
                         }
 
                         preference.summary = NumberFormat.getInstance().format(newMaxLogs)
                         true
                     } catch (e: NumberFormatException) {
-                        activity!!.showToast(getString(R.string.not_a_valid_number))
+                        requireActivity().showToast(getString(R.string.not_a_valid_number))
                         false
                     }
                 }
@@ -195,18 +201,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
+        val getFragmentManager = requireFragmentManager()
         prefSaveLocation.setOnPreferenceClickListener {
             val frag = SaveLocationDialogFragment()
             frag.setTargetFragment(this@SettingsFragment, 0)
-            frag.show(fragmentManager!!, SaveLocationDialogFragment.TAG)
+            frag.show(getFragmentManager, SaveLocationDialogFragment.TAG)
             true
         }
 
-        val frag = fragmentManager?.findFragmentByTag(SaveLocationDialogFragment.TAG)
+        val frag = getFragmentManager.findFragmentByTag(SaveLocationDialogFragment.TAG)
         frag?.setTargetFragment(this, 0)
 
-        val folderChooserFragment = fragmentManager
-                ?.findFragmentByTag(FolderChooserDialogFragment.TAG)
+        val folderChooserFragment = getFragmentManager
+                .findFragmentByTag(FolderChooserDialogFragment.TAG)
         folderChooserFragment?.setTargetFragment(this, 0)
     }
 
@@ -220,19 +227,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if (isExternalStorageWritable()) {
                 val frag = FolderChooserDialogFragment()
                 frag.setTargetFragment(this, 0)
-                frag.show(fragmentManager!!, FolderChooserDialogFragment.TAG)
+                frag.show(requireFragmentManager(), FolderChooserDialogFragment.TAG)
             } else {
-                activity!!.showToast(getString(R.string.err_msg_external_storage_not_writable))
+                requireActivity().showToast(getString(R.string.err_msg_external_storage_not_writable))
             }
         }
     }
 
     fun setupCustomSaveLocationPreLollipop(file: File?) {
         if (file == null) {
-            activity!!.showToast("Folder not selected")
+            requireActivity().showToast("Folder not selected")
         } else {
             if (!file.canWrite()) {
-                activity!!.showToast("Folder not writable")
+                requireActivity().showToast("Folder not writable")
                 return
             }
 
@@ -246,7 +253,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     @TargetApi(21)
     private fun setupCustomSaveLocationLollipop() {
-        if (ContextCompat.checkSelfPermission(activity!!,
+        if (ContextCompat.checkSelfPermission(requireActivity(),
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -282,7 +289,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             SAVE_LOCATION_REQ -> {
                 val uri = data?.data
                 if (uri != null) {
-                    activity!!.contentResolver.takePersistableUriPermission(uri,
+                    requireActivity().contentResolver.takePersistableUriPermission(uri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION or
                                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                     preferenceScreen.sharedPreferences.edit {
@@ -326,7 +333,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(activity!!)
+            return AlertDialog.Builder(requireActivity())
                     .setTitle(R.string.save_location)
                     .setItems(R.array.save_location_options) { _, which ->
                         if (which == 0) {

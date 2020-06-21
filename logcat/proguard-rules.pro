@@ -20,5 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable
+#-renamesourcefileattribute SourceFile
+#-keepattributes SourceFile,LineNumberTable
+-dontobfuscate

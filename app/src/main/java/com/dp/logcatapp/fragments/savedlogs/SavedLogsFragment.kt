@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dp.logcat.LogcatStreamReader
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.BaseActivityWithToolbar
 import com.dp.logcatapp.activities.CabToolbarCallback
 import com.dp.logcatapp.activities.SavedLogsActivity
@@ -67,7 +67,7 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
         viewModel = ViewModelProviders.of(this)
                 .get(SavedLogsViewModel::class.java)
 
-        recyclerViewAdapter = MyRecyclerViewAdapter(activity!!, this,
+        recyclerViewAdapter = MyRecyclerViewAdapter(requireActivity(), this,
                 this, viewModel.selectedItems)
     }
 
@@ -89,7 +89,7 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = recyclerViewAdapter
 
-        fragmentManager?.findFragmentByTag(RenameDialogFragment.TAG)
+        requireFragmentManager().findFragmentByTag(RenameDialogFragment.TAG)
                 ?.setTargetFragment(this, 0)
 
         viewModel.getFileNames().observe(viewLifecycleOwner, Observer {
@@ -198,18 +198,18 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
                 val fileInfo = recyclerViewAdapter.getItem(viewModel.selectedItems.toIntArray()[0])
                 val frag = RenameDialogFragment.newInstance(fileInfo.info.fileName, fileInfo.info.path)
                 frag.setTargetFragment(this, 0)
-                frag.show(fragmentManager!!, RenameDialogFragment.TAG)
+                frag.show(requireFragmentManager(), RenameDialogFragment.TAG)
                 true
             }
             R.id.action_export -> {
                 val dialog = ChooseExportFormatTypeDialogFragment()
                 dialog.setTargetFragment(this, 0)
-                dialog.show(fragmentManager!!, ChooseExportFormatTypeDialogFragment.TAG)
+                dialog.show(requireFragmentManager(), ChooseExportFormatTypeDialogFragment.TAG)
                 true
             }
             R.id.action_share -> {
                 val fileInfo = recyclerViewAdapter.getItem(viewModel.selectedItems.toIntArray()[0])
-                ShareUtils.shareSavedLogs(context!!, Uri.parse(fileInfo.info.path),
+                ShareUtils.shareSavedLogs(requireContext(), Uri.parse(fileInfo.info.path),
                         fileInfo.info.isCustom)
                 true
             }
@@ -238,15 +238,15 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
         val deleteList = viewModel.selectedItems
                 .map { recyclerViewAdapter.data[it] }
                 .toList()
-
-        val db = MyDB.getInstance(context!!)
+        val getContext = requireContext()
+        val db = MyDB.getInstance(getContext)
         scope.launch {
             withContext(IO) {
                 val deleted = deleteList
                         .filter {
                             with(Uri.parse(it.info.path)) {
                                 if (it.info.isCustom && Build.VERSION.SDK_INT >= 21) {
-                                    val file = DocumentFile.fromSingleUri(context!!, this)
+                                    val file = DocumentFile.fromSingleUri(getContext, this)
                                     file != null && file.delete()
                                 } else {
                                     this.toFile().delete()
@@ -272,13 +272,13 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
 
     private fun saveToDeviceFallback() {
         if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
-            activity!!.showToast(getString(R.string.external_storage_not_mounted_error))
+            requireActivity().showToast(getString(R.string.external_storage_not_mounted_error))
             return
         }
 
         val fileInfo = recyclerViewAdapter.getItem(viewModel.selectedItems.toIntArray()[0])
         val fileName = fileInfo.info.fileName
-        val srcFolder = File(context!!.filesDir, LogcatLiveFragment.LOGCAT_DIR)
+        val srcFolder = File(requireContext().filesDir, LogcatLiveFragment.LOGCAT_DIR)
         val src = File(srcFolder, fileName)
 
         @Suppress("DEPRECATION")
@@ -287,7 +287,7 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
         val destFolder = File(documentsFolder, "LogcatReader")
         if (!destFolder.exists()) {
             if (!destFolder.mkdirs()) {
-                activity!!.showToast(getString(R.string.error_saving))
+                requireActivity().showToast(getString(R.string.error_saving))
                 return
             }
         }
@@ -311,16 +311,16 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
     }
 
     private fun onSaveCallback(uri: Uri) {
+        val getContext = requireContext()
         val fileInfo = recyclerViewAdapter.getItem(viewModel.selectedItems.toIntArray()[0])
-        val folder = File(context!!.filesDir, LogcatLiveFragment.LOGCAT_DIR)
+        val folder = File(getContext.filesDir, LogcatLiveFragment.LOGCAT_DIR)
         val file = File(folder, fileInfo.info.fileName)
-
         try {
             val src = FileInputStream(file)
-            val dest = context!!.contentResolver.openOutputStream(uri)
+            val dest = getContext.contentResolver.openOutputStream(uri)
             runSaveFileTask(src, dest!!)
         } catch (e: IOException) {
-            activity!!.showToast(getString(R.string.error_saving))
+            requireActivity().showToast(getString(R.string.error_saving))
         }
     }
 
@@ -365,7 +365,7 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
     private fun onRename(newName: String, newPath: Uri) {
         val fileInfo = recyclerViewAdapter.getItem(viewModel.selectedItems.toIntArray()[0])
 
-        val db = MyDB.getInstance(context!!)
+        val db = MyDB.getInstance(requireContext())
         scope.launch {
             withContext(IO) {
                 db.savedLogsDao().delete(fileInfo.info)
@@ -387,7 +387,7 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
         private var exportFormat = ExportFormat.DEFAULT
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            return AlertDialog.Builder(activity!!)
+            return AlertDialog.Builder(requireActivity())
                     .setTitle(getString(R.string.select_export_format))
                     .setSingleChoiceItems(R.array.export_format, 0) { _, which ->
                         exportFormat = ExportFormat.values()[which]
@@ -515,7 +515,7 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
                 }
             }
 
-            activity?.let {
+            requireActivity().let {
                 if (result) {
                     it.showToast(it.getString(R.string.saved))
                 } else {
@@ -544,23 +544,25 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
         }
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val getActivity = requireActivity()
+            val getArguments = requireArguments()
             val view = inflateLayout(R.layout.rename_dialog)
             val editText = view.findViewById<EditText>(R.id.editText)
-            editText.setText(arguments!!.getString(KEY_FILENAME))
+            editText.setText(getArguments.getString(KEY_FILENAME))
             editText.selectAll()
 
-            val dialog = AlertDialog.Builder(activity!!)
+            val dialog = AlertDialog.Builder(getActivity)
                     .setTitle(R.string.rename)
                     .setView(view)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
                         val newName = editText.text.toString()
                         if (newName.isNotEmpty()) {
-                            val file = arguments!!.getString(KEY_PATH)!!.toUri().toFile()
+                            val file = getArguments.getString(KEY_PATH)!!.toUri().toFile()
                             val newFile = File(file.parent, newName)
                             if (file.renameTo(newFile)) {
                                 (targetFragment as SavedLogsFragment).onRename(newName, newFile.toUri())
                             } else {
-                                activity!!.showToast(getString(R.string.error))
+                                getActivity.showToast(getString(R.string.error))
                             }
                         }
                         dismiss()
@@ -572,7 +574,7 @@ class SavedLogsFragment : BaseFragment(), View.OnClickListener, View.OnLongClick
 
             dialog.setOnShowListener {
                 editText.requestFocus()
-                val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as
+                val imm = getActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as
                         InputMethodManager
                 imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
             }

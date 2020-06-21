@@ -1,12 +1,12 @@
 package com.logcat.collections
 
-class FixedCircularArray<E>(val capacity: Int, initialSize: Int = INITIAL_SIZE) : Iterable<E> {
+class FixedCircularArray<E>(private val capacity: Int, initialSize: Int = INITIAL_SIZE) : Iterable<E> {
 
     companion object {
         private const val INITIAL_SIZE = 16
     }
 
-    private var array = arrayOfNulls<Any>(Math.min(capacity, initialSize))
+    private var array = arrayOfNulls<Any>(capacity.coerceAtMost(initialSize))
     private var head = -1
     private var next = 0
 
@@ -111,7 +111,7 @@ class FixedCircularArray<E>(val capacity: Int, initialSize: Int = INITIAL_SIZE) 
             return
         }
 
-        val newSize = Math.min(array.size * 2, capacity)
+        val newSize = (array.size * 2).coerceAtMost(capacity)
         val newArray = arrayOfNulls<Any>(newSize)
         System.arraycopy(array, 0, newArray, 0, array.size)
         array = newArray

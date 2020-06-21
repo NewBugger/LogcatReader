@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dp.logcat.Log
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.BaseActivityWithToolbar
 import com.dp.logcatapp.fragments.base.BaseFragment
 import com.dp.logcatapp.fragments.shared.dialogs.CopyToClipboardDialogFragment
@@ -160,10 +160,10 @@ class SavedLogsViewerFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        adapter = MyRecyclerViewAdapter(activity!!)
+        adapter = MyRecyclerViewAdapter(requireActivity())
         viewModel = ViewModelProviders.of(this)
                 .get(SavedLogsViewerViewModel::class.java)
-        viewModel.init(Uri.parse(arguments!!.getString(KEY_FILE_URI)))
+        viewModel.init(Uri.parse(requireArguments().getString(KEY_FILE_URI)))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -212,7 +212,7 @@ class SavedLogsViewerFragment : BaseFragment() {
                 viewModel.autoScroll = false
                 val log = adapter[pos]
                 CopyToClipboardDialogFragment.newInstance(log)
-                        .show(fragmentManager!!, CopyToClipboardDialogFragment.TAG)
+                        .show(requireFragmentManager(), CopyToClipboardDialogFragment.TAG)
             }
         }
 
@@ -230,10 +230,10 @@ class SavedLogsViewerFragment : BaseFragment() {
                         }
                     }
                     is SavedLogsViewerViewModel.SavedLogsResult.FileOpenError -> {
-                        context?.showToast(getString(R.string.error_opening_source))
+                        requireContext().showToast(getString(R.string.error_opening_source))
                     }
                     is SavedLogsViewerViewModel.SavedLogsResult.FileParseError -> {
-                        context?.showToast(getString(R.string.unsupported_source))
+                        requireContext().showToast(getString(R.string.unsupported_source))
                     }
                 }
             } else {
@@ -291,10 +291,10 @@ class SavedLogsViewerFragment : BaseFragment() {
         val result = viewModel.getLogs().value
 
         val logs: List<Log>
-        if (result !is SavedLogsViewerViewModel.SavedLogsResult.Success) {
-            logs = emptyList()
+        logs = if (result !is SavedLogsViewerViewModel.SavedLogsResult.Success) {
+            emptyList()
         } else {
-            logs = result.logs
+            result.logs
         }
         setLogs(logs)
 

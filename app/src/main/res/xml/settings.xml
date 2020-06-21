@@ -27,6 +27,15 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory android:title="@string/logcat">
+        <androidx.preference.ListPreference
+            android:defaultValue="1"
+            android:dialogTitle="@string/pref_working_mode_title"
+            android:entries="@array/pref_working_mode_entries"
+            android:entryValues="@array/pref_working_mode_values"
+            android:key="pref_working_mode_key"
+            android:persistent="true"
+            android:title="@string/pref_working_mode_title" />
+
         <androidx.preference.EditTextPreference
             android:defaultValue="250"
             android:dialogTitle="@string/pref_poll_interval_title"

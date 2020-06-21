@@ -20,7 +20,7 @@ import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.MainActivity
 import com.dp.logcatapp.activities.SettingsActivity
 import com.dp.logger.Logger
@@ -71,7 +71,7 @@ fun newSnakcbar(view: View?, msg: String, length: Int = Snackbar.LENGTH_SHORT): 
 
 fun Fragment.inflateLayout(@LayoutRes layoutResId: Int, root: ViewGroup? = null,
                                                  attachToRoot: Boolean = false): View =
-        activity!!.inflateLayout(layoutResId, root, attachToRoot)
+        requireActivity().inflateLayout(layoutResId, root, attachToRoot)
 
 //// END Fragment
 

@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.SavedLogsViewerActivity
 import com.dp.logcatapp.util.ShareUtils
 import com.dp.logcatapp.util.Utils
@@ -35,7 +35,7 @@ class OnSavedBottomSheetDialogFragment : BottomSheetDialogFragment() {
                               savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.saved_log_bottom_sheet, container, false)
 
-        val arguments = arguments!!
+        val arguments = requireArguments()
         val fileName = arguments.getString(KEY_FILE_NAME)
         val uri = Uri.parse(arguments.getString(KEY_URI))
 
@@ -48,7 +48,8 @@ class OnSavedBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
 
         rootView.findViewById<TextView>(R.id.actionShare).setOnClickListener {
-            ShareUtils.shareSavedLogs(context!!, uri, Utils.isUsingCustomSaveLocation(context!!))
+            val getContext = requireContext()
+            ShareUtils.shareSavedLogs(getContext, uri, Utils.isUsingCustomSaveLocation(getContext))
             dismiss()
         }
 

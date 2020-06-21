@@ -55,15 +55,15 @@ object Logger {
         log(INFO, "[$tag] $msg")
     }
 
-    fun verbose(tag: String, msg: String) {
+    private fun verbose(tag: String, msg: String) {
         log(VERBOSE, "[$tag] $msg")
     }
 
-    fun warning(tag: String, msg: String) {
+    private fun warning(tag: String, msg: String) {
         log(WARNING, "[$tag] $msg")
     }
 
-    fun wtf(tag: String, msg: String) {
+    private fun wtf(tag: String, msg: String) {
         log(WTF, "[$tag] $msg")
     }
 

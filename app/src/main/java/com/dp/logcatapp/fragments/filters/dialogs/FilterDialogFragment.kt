@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.dp.logcat.Log
 import com.dp.logcat.LogPriority
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.FiltersActivity.Companion.KEY_LOG
 
 import com.dp.logcatapp.fragments.base.BaseDialogFragment
@@ -130,11 +130,11 @@ class FilterDialogFragment : BaseDialogFragment() {
             getString(R.string.filter)
         }
 
-        return AlertDialog.Builder(activity!!)
+        return AlertDialog.Builder(requireActivity())
                 .setTitle(title)
                 .setView(rootView)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    var logcatMsg = LogcatMsg()
+                    val logcatMsg = LogcatMsg()
                     logcatMsg.logLevels = mutableSetOf<String>()
                     logcatMsg.keyword = editTextKeyword.text.toString().trim()
                     logcatMsg.tag = editTextTag.text.toString().trim()
@@ -153,7 +153,7 @@ class FilterDialogFragment : BaseDialogFragment() {
                 .create()
     }
 
-    fun initViewModel(log: Log?) {
+    private fun initViewModel(log: Log?) {
         log?.let {
             viewModel.tag = log.tag
             viewModel.pid = log.pid
@@ -162,7 +162,7 @@ class FilterDialogFragment : BaseDialogFragment() {
         }
     }
 
-    fun getLog() = arguments?.getParcelable<Log>(KEY_LOG)
+    private fun getLog() = arguments?.getParcelable<Log>(KEY_LOG)
 }
 
 internal class MyViewModel : ViewModel() {

@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.util.getTypeface
 
 class CustomTextView : AppCompatTextView {

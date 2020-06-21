@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dp.logcat.Log
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.db.FilterInfo
 import com.dp.logcatapp.fragments.base.BaseFragment
 import com.dp.logcatapp.fragments.filters.dialogs.FilterDialogFragment
@@ -44,7 +44,7 @@ class FiltersFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        viewModel = ViewModelProviders.of(activity!!)
+        viewModel = ViewModelProviders.of(requireActivity())
                 .get(FiltersViewModel::class.java)
         recyclerViewAdapter = MyRecyclerViewAdapter {
             onRemoveClicked(it)
@@ -88,11 +88,11 @@ class FiltersFragment : BaseFragment() {
         val rootView = inflateLayout(R.layout.filters_fragment)
 
         emptyMessage = rootView.findViewById(R.id.textViewEmpty)
-
+        val getActivity = requireActivity()
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.addItemDecoration(DividerItemDecoration(activity!!,
+        recyclerView.addItemDecoration(DividerItemDecoration(getActivity,
                 DividerItemDecoration.VERTICAL))
-        linearLayoutManager = LinearLayoutManager(activity!!)
+        linearLayoutManager = LinearLayoutManager(getActivity)
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = recyclerViewAdapter
 
@@ -119,13 +119,14 @@ class FiltersFragment : BaseFragment() {
     }
 
     private fun showAddFilter() {
-        var frag = fragmentManager?.findFragmentByTag(FilterDialogFragment.TAG) as? FilterDialogFragment
+        val getFragmentManager = requireFragmentManager()
+        var frag = getFragmentManager.findFragmentByTag(FilterDialogFragment.TAG) as? FilterDialogFragment
         if (frag == null) {
             frag = FilterDialogFragment.newInstance(getLog())
         }
 
         frag.setTargetFragment(this, 0)
-        frag.show(fragmentManager!!, FilterDialogFragment.TAG)
+        frag.show(getFragmentManager, FilterDialogFragment.TAG)
     }
 
     @SuppressLint("CheckResult")

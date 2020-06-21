@@ -15,11 +15,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import com.dp.logcat.Logcat
-import com.dp.logcatapp.R
+import io.github.newbugger.android.logcatapp.R
 import com.dp.logcatapp.activities.MainActivity
 import com.dp.logcatapp.util.PreferenceKeys
 import com.dp.logcatapp.util.getDefaultSharedPreferences
 import com.dp.logcatapp.util.showToast
+import java.util.*
 
 class LogcatService : BaseService() {
 
@@ -52,9 +53,7 @@ class LogcatService : BaseService() {
             val buffers = getDefaultSharedPreferences()
                     .getStringSet(PreferenceKeys.Logcat.KEY_BUFFERS, emptySet())
             if (buffers == null || buffers.isEmpty()) {
-                getDefaultSharedPreferences().edit {
-                    putStringSet(PreferenceKeys.Logcat.KEY_BUFFERS, defaultBuffers)
-                }
+                getDefaultSharedPreferences().edit().putStringSet(PreferenceKeys.Logcat.KEY_BUFFERS, defaultBuffers).apply()
             }
         }
     }
@@ -176,7 +175,7 @@ class LogcatService : BaseService() {
         showToast(getString(R.string.restarting_logcat))
 
         restartedLogcat = true
-        logcat.logcatBuffers = bufferValues.map { e -> buffers[e.toInt()].toLowerCase() }.toSet()
+        logcat.logcatBuffers = bufferValues.map { e -> buffers[e.toInt()].toLowerCase(Locale.getDefault()) }.toSet()
         logcat.restart()
     }
 
@@ -193,7 +192,7 @@ class LogcatService : BaseService() {
         logcat.setPollInterval(pollInterval)
 
         val buffers = Logcat.AVAILABLE_BUFFERS
-        logcat.logcatBuffers = bufferValues.map { e -> buffers[e.toInt()].toLowerCase() }.toSet()
+        logcat.logcatBuffers = bufferValues.map { e -> buffers[e.toInt()].toLowerCase(Locale.getDefault()) }.toSet()
         logcat.start()
     }
 
