@@ -26,6 +26,8 @@ import com.dp.logcatapp.util.PreferenceKeys
 import com.dp.logcatapp.util.isDarkThemeOn
 import com.dp.logcatapp.util.restartApp
 import com.dp.logcatapp.util.showToast
+import io.github.newbugger.android.logcatapp.util.BuildUtil
+import io.github.newbugger.android.logcatapp.util.PreferenceUtil
 import java.io.File
 import java.text.NumberFormat
 
@@ -44,6 +46,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setupAppearanceCategory()
         setupLogcatCategory()
         setupAboutCategory()
+        if (PreferenceUtil.checkSdkVersion(Build.VERSION_CODES.Q)) {
+            findPreference<Preference>(PreferenceKeys.Logcat.KEY_SAVE_LOCATION)!!.apply {
+                isEnabled = false
+                summary = "$summary (${BuildUtil.Constant.maxSDK(Build.VERSION_CODES.P)})"
+            }
+        }
     }
 
     private fun setupAppearanceCategory() {

@@ -1,11 +1,16 @@
 package io.github.newbugger.android.logcatapp.util
 
 import android.content.Context
+import android.os.Build
 import com.dp.logcatapp.util.PreferenceKeys
 import com.dp.logcatapp.util.getDefaultSharedPreferences
 
 
 object PreferenceUtil {
+
+    fun checkSdkVersion(level: Int): Boolean {
+        return Build.VERSION.SDK_INT >= level
+    }
 
     fun getPrefWorker(context: Context): Boolean {
         return prefGetString(context, PreferenceKeys.Logcat.KEY_WORKING_MODE, "1") == PreferenceKeys.Logcat.Default.WORKING_MODE

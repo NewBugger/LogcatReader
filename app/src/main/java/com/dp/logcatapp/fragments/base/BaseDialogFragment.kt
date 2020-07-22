@@ -8,7 +8,7 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
 
 open class BaseDialogFragment : DialogFragment() {
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         var animation: Animation? = super.onCreateAnimation(transit, enter, nextAnim)

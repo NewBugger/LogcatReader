@@ -60,7 +60,7 @@ class LogcatService : BaseService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIFICATION_ID, createNotification(recording))
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     fun updateNotification(showStopRecording: Boolean) {
@@ -74,9 +74,10 @@ class LogcatService : BaseService() {
         val contentIntent = PendingIntent.getActivity(this, 0, startIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val exitIntent = Intent(this, MainActivity::class.java)
-        exitIntent.putExtra(MainActivity.EXIT_EXTRA, true)
-        exitIntent.action = "exit"
+        val exitIntent = Intent(this, MainActivity::class.java).apply {
+            putExtra(MainActivity.EXIT_EXTRA, true)
+            action = "exit"
+        }
         val exitPendingIntent = PendingIntent.getActivity(this, 1, exitIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 

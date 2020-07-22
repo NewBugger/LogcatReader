@@ -1,17 +1,18 @@
 package io.github.newbugger.android.logcatapp
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import me.weishu.reflection.Reflection
 
 
-@SuppressLint("unused")
 class LogcatApp : Application() {
 
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-        Reflection.unseal(this) // the dependency of shizuku as to keep there
+    override fun getBaseContext(): Context {
+        return super.getBaseContext().also { context = it }
+    }
+
+    companion object {
+        private lateinit var context: Context
+        fun context(): Context = context
     }
 
 }

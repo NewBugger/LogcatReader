@@ -11,7 +11,7 @@ open class BaseFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        handler = Handler()
+        handler = Handler(Looper.getMainLooper())
     }
 
     override fun onDestroy() {

@@ -25,6 +25,8 @@ import com.dp.logcatapp.activities.MainActivity
 import com.dp.logcatapp.activities.SettingsActivity
 import com.dp.logger.Logger
 import com.google.android.material.snackbar.Snackbar
+import io.github.newbugger.android.logcatapp.LogcatApp
+import io.github.newbugger.android.logcatapp.util.PreferenceUtil
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -110,7 +112,11 @@ private class ToastViewApplicationContextWrapper(base: Context) : ContextWrapper
 }
 
 private class ToastWindowManager(val base: WindowManager) : WindowManager {
-    override fun getDefaultDisplay(): Display = base.defaultDisplay
+    override fun getDefaultDisplay(): Display = if (PreferenceUtil.checkSdkVersion(Build.VERSION_CODES.R)) {
+        LogcatApp.context().display ?: base.defaultDisplay
+    } else {
+        base.defaultDisplay
+    }
 
     override fun addView(view: View?, params: ViewGroup.LayoutParams?) {
         try {

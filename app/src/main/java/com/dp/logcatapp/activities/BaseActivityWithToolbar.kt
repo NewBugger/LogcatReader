@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.MenuItem
 import android.view.View
@@ -29,7 +30,7 @@ abstract class BaseActivityWithToolbar : AppCompatActivity() {
 
     lateinit var toolbar: Toolbar
         private set
-    protected val handler = Handler()
+    protected val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         PreferenceManager.setDefaultValues(this, R.xml.settings, false)
@@ -57,8 +58,7 @@ abstract class BaseActivityWithToolbar : AppCompatActivity() {
     }
 
     private fun setAppBarPaddingForKitkat(viewGroup: ViewGroup) {
-        val dm = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(dm)
+        val dm = DisplayMetrics().also { windowManager.defaultDisplay.getMetrics(it) }
         val topPadding = (dm.scaledDensity * 25).toInt()
         viewGroup.setPadding(0, topPadding, 0, 0)
     }

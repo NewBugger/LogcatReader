@@ -37,8 +37,6 @@ import com.dp.logcatapp.views.IndeterminateProgressSnackBar
 import com.dp.logger.Logger
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import io.github.newbugger.android.logcatapp.shizuku.connect.ShizukuBinder
-import io.github.newbugger.android.logcatapp.shizuku.server.ShizukuApi
 import io.github.newbugger.android.logcatapp.util.PreferenceUtil
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
@@ -260,16 +258,6 @@ class LogcatLiveFragment : BaseFragment(), ServiceConnection, LogsReceivedListen
                 FilterExclusionDialogFragment.newInstance(log)
                         .show(getFragmentManager, FilterExclusionDialogFragment.TAG)
             }
-        }
-
-        if (!checkReadLogsPermission()) {
-            val getContext = requireContext()
-            if (PreferenceUtil.getPrefWorker(getContext)) {
-                if (ShizukuBinder.shizukuRequestPermission(getContext))
-                    ShizukuApi.setApplicationWrapper(BuildConfig.APPLICATION_ID, Manifest.permission.READ_LOGS)
-            }
-        } else {
-            android.util.Log.d(javaClass.name, "checkReadLogsPermission(): yes.")
         }
 
         if (!checkReadLogsPermission() && !viewModel.showedGrantPermissionInstruction) {
